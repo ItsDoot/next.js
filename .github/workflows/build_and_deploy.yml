@@ -227,6 +227,15 @@ jobs:
               cd packages/next-swc && npm run build-native-release -- --target aarch64-unknown-linux-musl &&
               llvm-strip -x native/next-swc.*.node
 
+          - host: ubuntu-latest
+            target: 'armv7-unknown-linux-gnueabihf'
+            build: |
+              sudo apt-get update
+              sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
+              turbo run build-native-no-plugin -- --release --target armv7-unknown-linux-gnueabihf
+              arm-linux-gnueabihf-strip packages/next-swc/native/next-swc.*.node
+
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
     timeout-minutes: 30
